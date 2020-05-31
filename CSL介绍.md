@@ -71,6 +71,12 @@
 
 引用格式的第二类为`Note`格式。引用中的`marker`可以是数字或者符号，例如`[*]或者[†]`。每个`marker`指向脚注或者尾注。`CSL`不能设置使用哪些数字或者符号用于`marker`，这些应该用字处理软件(比如 `word`)设置。与上面的`in-text`格式不同，尾注或者脚注通常显示的信息更多。
 
+**参考文献条目实例**
+
+> [*]  Voyage to St. Kilda’ (3rd edit. 1753), p. 37.
+>
+> [†]  Sir J. E. Tennent, ‘Ceylon,’ vol. ii. 1859, p. 107.
+
 ## CSL 生态
 
 要明白`CSL`是怎么运作的，首先要了解`CSL`的生态。
@@ -78,6 +84,14 @@
 ![](<https://docs.citationstyles.org/en/stable/_images/csl-infrastructure.png>)
 
 ### 独立格式和从属格式
+
+`CSL`的一切都是围绕`style`的，但是并不是所有的`style`都是相似的。主要包括两种格式：独立格式`(independent styles)`和从属格式`(dependent styles)`。
+
+独立格式有2种功能，首先，需要先定义一种引用格式。具体格式是什么样的，是 `author-date`格式还是`note`格？ 引用的顺序是按字母排序还是按日期排序？参考文献条目种是不是包含`DOI`？使用什么标点符号以及使用大写还是小写？文献发表年限在文献题目前还是后？等等，这些都是引用格式定义的。第二个功能是：`CSL`必须是能自我解释的，可以称之为格式的**元数据**。元数据种可以包括该`CSL`对应的期刊标题，以及该期刊的联接，该`CSL`的创建者等。
+
+从属格式则仅包括格式的元数据，没有对引用格式的定义。从属格式必须指定它的参考格式(父格式)，从属格式的引用将使用它的父格式的引用格式。
+
+当多个格式使用相同的引用格式时，从属格式非常有用。以一个出版社旗下的不同期刊为例，如果每个期刊都使用独立格式，则每个`CSL`都要完整的对引用格式的描述，即使他们的引用格式都是相同的。这样就导致`CSL`太庞大，冗余太多。这种情况下，从属格式就比较适合。例如，"Nature"，"Nature Biotechnology"和"Nature Chemistry"都使用同样的引用格式。因此，只需要创建一个"Nature" 的独立格式，将"Nature Biotechnology"和"Nature Chemistry"格式都定义为"Nature"格式的从属格式。这样，如果"Nature"的出版社想改变引用格式，只需要改变"Nature"期刊格式的`CSL`就可以，不需要改变它的从属格式对应的`CSL`。
 
 ### Locale 文件
 
@@ -92,6 +106,8 @@
 ## 理解 CSL 格式
 
 到现在为止，我们已经知道什么是`CSL`、怎么使用它、以及它怎么运作的。接下来我们将深入到`CSL`文件内部，分析它的`XML`代码。`XML基础.md` 文件中简单介绍了`XML`，看完后可以读懂并编辑简单的`XML`文件。如果想更多的了解`XML`，可以在网上查找`XML`教程。
+
+### 从属格式解析
 
 下面是一个`CSL`从属格式文件：
 
@@ -115,15 +131,33 @@
 </style>
 ```
 
-### XML 基础 
+如`XML基础.md`文件中的描述：一行给出了`xml`的声明。根元素为`style`，其中包含了一个子元素`info`。`info`元素中又包含了很多元素，其中很多元素都有内容和属性。`xmlns、version 和defaults-locale`都是元素`style`的属性，分别指定了??、版本和使用的语言，这里为美国英语。
 
-**XML描述**：第一行通畅是 xml 描述，包括xml的版本和。
+大多数从属格式都是电子表格自动生成的，下面的注释也给出了指向电子表格的联接。
 
-**要素和遗产** ： 要素是 XML 文件的基本块。每个 XML 文件都都一个根要素，对CSL 文件来说是 `<style/>`.如果
+```xml
+ <!-- Generated with https://github.com/citation-style-language/utilities/tree/master/generate_dependent_styles/data/asm -->
+```
 
-一个元素包括其他的元素，父元素就被分为一个开始的标签`<style>`和一个结束的标签 `</style>`. 上面的例子中，style 只含有一个子元素，就是 `<info/>`,这个元素含有很多其他的元素。
+元素`info`里包含了大多数`style`的元数据，比如：
 
-**属性和元素的内容**
+`style`的题目（也是期刊的题目）：
+
+```xml
+<title>Applied and Environmental Microbiology</title>
+```
+
+样式的ID，是文献管理软件用来区分不同`style`的标志：
+
+```xml
+<id>http://www.zotero.org/styles/applied-and-environmental-microbiology</id>
+```
+
+`style`自己的链接。该链接指向了网上的副本
+
+
+
+
 
 
 
