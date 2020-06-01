@@ -153,15 +153,53 @@
 <id>http://www.zotero.org/styles/applied-and-environmental-microbiology</id>
 ```
 
-`style`自己的链接。该链接指向了网上的副本
+`style`自己的链接。该链接指向了网上的副本。
 
+```xml
+<link href="http://www.zotero.org/styles/applied-and-environmental-microbiology" rel="self"/>
+```
 
+从属格式需要指定它的父格式，父格式为独立格式。这里的父格式为 `American Society for Microbiology`
 
+```xml
+<link href="http://www.zotero.org/styles/american-society-for-microbiology" rel="independent-parent"/>
+```
 
+为了更好的维护格式，因此需要指定格式的文档链接。这里文档的链接转到了期刊的主页。
 
+```xml
+<link href="http://aem.asm.org/" rel="documentation"/>
+```
 
+为了便于分类，还可以在`category`元素中设置它的属性。这里分别设置了引用格式为`numeric`，领域为`biology`。
 
+```xml
+<category citation-format="numeric"/>
+<category field="biology"/>
+```
 
+当期刊创建格式的时候，可以在`issn`元素和`eissn`元素中保存其打印标准国际连续出版物号`(ISSN)`和其电子版本`(ESSIN)`。
+
+```xml
+<issn>0099-2240</issn>
+<eissn>1098-5336</eissn>
+```
+
+`updated`元素保存了最后一次更新的时间戳：
+
+```xml
+<updated>2014-04-30T03:45:36+00:00</updated>
+```
+
+`rights`元素中保存了该CSL格式的证书：
+
+```xml
+<rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
+```
+
+### 独立格式解析
+
+下面是一个独立格式的实例，实例中定义了引用格式，所以要比从属格式要大一些。这里的示例只是一个简化的例子，实际的格式比这个还要大很多。但这个简化的例子仍然是完整有效的。
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -244,7 +282,21 @@
 </style>
 ```
 
+#### 结构
 
+#### 根元素/style元素
+
+#### info元素
+
+#### citation元素和macro元素
+
+#### bibliography元素
+
+#### locale 元素
+
+## 更进一步
+
+这里只给出了一个基本的介绍。
 
 
 
