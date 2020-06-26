@@ -4,7 +4,7 @@
 
 ## 前言
 
-`CSL`是一种基于`XML`的开放的语言，用来描述引用和参考文献的格式。对CSL更加技术和详细的描述见`CSL 1.0.1 规范`。
+`CSL`是一种基于`XML`的开放(open  开源？)语言，用来描述引用和参考文献的格式。对CSL更加技术和详细的描述见`CSL 1.0.1 规范`。
 
 ## CSL 是什么
 
@@ -79,7 +79,7 @@
 
 ## CSL 生态
 
-要明白`CSL`是怎么运作的，首先要了解`CSL`的生态。
+要明白`CSL`是怎么运作的，首先要了解`CSL`的生态。`Style`指的是 CSL 样式，`Item Metadata`指的是每篇参考文献的作者，题目等信息，`Locale Files`是为实现与语言无关（指英语，汉语等）的格式的文件，`Citation Details`指的是影响引文信息或参考文献列表表现的细节，比如顺序，位置等。
 
 ![](<https://docs.citationstyles.org/en/stable/_images/csl-infrastructure.png>)
 
@@ -95,13 +95,43 @@
 
 ### Locale 文件
 
+事实上，大多数独立格式并不是完全独立的。
+
+以下面的条目为例：
+
+> Hartman, P., Bezos, J. P., Kaphan, S., & Spiegel, J. (1999, September 28). Method and system for placing a purchase order via a communications network. Retrieved from <https://www.google.com/patents/US5960411>
+
+你可以使用一种独立的CSL格式来描述这个条目，在格式种编码就可以实现。例如，在最后的链接前加上`"Retrieved from"`，或者使用`"YYYY, Month DD"`作为日期的格式。但是这样的一种CSL，只能在美式英语中使用，如果使用德语写作，就必须修改样式中对应的翻译和日期格式。
+
+幸运的是，独立格式可以依据`CSL locale files`来实现通用项的翻译，日期格式和语法的转换。例如：我们可以重写CSL格式使用`"retrieved"`和`"from"`项，并使用本地化的日期格式。如果我们将CSL样式样式的使用环境设置为美式英语，该样式将从 US English locale file检索和翻译对应的项，并生成上述引用。如果将英语换为德语，就会使用德语对应的locale file，生成的引用如下：
+
+>Hartman, P., Bezos, J. P., Kaphan, S., & Spiegel, J. (28. September 1999). Method and system for placing a purchase order via a communications network. Abgerufen von <https://www.google.com/patents/US5960411>
+
+因此，使用  CSL locale files ，可以编写与语言无关的CSL样式。如上面展示的，这样的格式可以轻易的在不同的语言中转换。但是语言是很复杂的，CSL automatic localization并不能支持所有的语言特色。但是，语言无关的样式仍然是有意义的，如果你要自己修改CSL样式来适应自己选择的语言环境，参考这些语言无关的样式将更容易实现。
+
+Locale file 还有一个好处，那就是，我们只需要为每种语言定义一次通用的翻译，日期格式和语法。这样可以保证样式紧凑，并使locale file更容易维护。由于给定语言的引用格式并不是一直和locale file中定义的转换格式一致，因此，我们也可以自己选择性的重写任何在locale file中定义的项目。下面独立格式解析中的`locale`元素就是为实现这一功能设置的。
+
 ### Item Metadata
+
+接下来就是引用中需要的参考文献条目的细节：条目元数据。
+
+例如：一篇期刊文章可能需要作者的名字，发表的年份，文章题目，期刊名称，卷和期，出现的页码范围以及DOI（数字文献唯一标识），所有这些信息都有助于读者识别和查找这篇文章。
+
+参考文献管理软件可以轻松的创建文献的这些细节信息。但是，很多参考文献管理软件都有自己的格式来存储这些元素据，大多数都支持通用的`bibliographic exchange formats`，比如`BixTex`和`RIS`。` citeproc-js `CSL 处理器引入了一种基于`JSON`的格式，用于以`citeproc-js`可以理解的方式来存储元数据。其他的一些 CSL 处理器后来采用了这种`“CSL JSON”`格式（也称为`“citeproc JSON”`）。
+
+译者注：这里讲的似乎有些繁琐。总的来说，是我们需要每篇文章的作者，题目，发表期刊等信息来生成对应的条目。文献管理软件可以很方便的提供这些信息。至于其内部存储的方式，使用的时候并不需要关心，类似`Zotero`的文献管理软件会自动使用这些信息和CSL生成引用信息。
 
 ### 引用细节
 
-### CSL 生成器
+对于给定的引用格式，引文和条目的展示不仅取决于被引用项的元数据，还取决于这些项被引用的上下文。我们将这类特定于上下文的信息称为引用细节。
 
+例如：引用时对条目的排序会影响他们在参考文献中的位置（在下面独立格式的`citation`和`bibliography`章节中提到）。
 
+### CSL 处理器
+
+有了 CSL 样式，locale file，元数据和引用细节，我们现在需要一个软件来解析这些信息，并以正确的格式生成引用和参考文献条目。用来完成这些功能的软件就是 CSL处理器。
+
+大多数的参考文献管理软件使用的是免费开源的CSL处理器，比如：`citeproc-js`。
 
 ## 理解 CSL 格式
 
@@ -452,9 +482,29 @@
 </bibliography>
 ```
 
+上述的例子中的`bibliography`实际上只适用于一种类型：期刊文章。它生成的条目的格式是：
 
+> A.C. Smith, D. Williams, T. Johnson. 2002. Story of my life. Journal of Biographies, 12(2), 24—27. W. Wallace, J. Snow. 1999. Winter is coming. Journal of Climate Dynamics, 6(9), 97—102.
+
+我们怎么定义这种格式呢？首先，`bibliography`元素的结构和`citation`元素很相似，不同的是，这里的`layout`元素用来定义参考文献条目的格式。除了给出`author`和`issued-year`，参考文献条目还需要给出每个条目的`title`、`container-title`(对期刊文章来说，就是期刊的名称)、`volume`、`issue`和`page`。这里`layout`元素使用属性`suffix`和`delimiter`分别指定了`group`的后缀为`.`，以及`group`之间的分隔符为`,`。
+
+和`citation`元素相同，`bibliography`也包括了一个`sort`元素，用来对参考文献条目进行排序。这里的三个`key`分别为`author`、`issued-year`和`title`。
 
 #### locale 元素
+
+最后介绍的是`loacle`元素。正如上面写道的，`CSL locale file`允许CSL 样式快速转换为不同的语言。但是，有时需要覆盖默认翻译。
+
+```xml
+<locale xml:lang="en">
+  <terms>
+    <term name="no date">without date</term>
+  </terms>
+</locale>
+```
+
+对 US English 来说，`"no date"`项的内容就是`"no date"`。但是在我们的例子中，我们想使用`"without date"`去替换它。为了重写默认的翻译，我们可以使用类似上面的`locale`元素。对一个没有日期的条目来说，这种重写会导致引用变为像`(D. Williams, without date)`这样的格式。
+
+`locale`的`xml:lang`属性被设置为`en`，这告诉CSL 样式当样式被用于英语写作的时候，重写`"no date"。如果我们`在德语写作的时候使用该CSL，该样式将会依据German locale file 印出德语的翻译(`ohne Datum`)
 
 ## 更进一步
 
