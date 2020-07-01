@@ -113,11 +113,137 @@ CSL 是一种基于 XML 的格式，用来描述引用的格式，注释和参�
 
 #### Info
 
+`cs:info`包含了样式的元数据。其结构基于[Atom Syndication Format](http://tools.ietf.org/html/rfc4287)。在独立格式中，`cs:info`有下面的几个子元素：
+
+
+
+`cs:author`和`cs:contributor` （可选）
+
+​	`cs:author`和`cs:contributor`分别用来致谢样式的作者和贡献者，可能被使用多次。在这些元素中，子元素`cs:name`必须出现一次，`cs:email`和`cs:uri`则可能出现一次。这些子元素分别代表作者或者贡献者的名字，邮箱和URI。
+
+`cs:category` (可选)
+
+​	样式可能被分类到一个或者多个类别，`cs:category`可能被使用一次，用来描述 in-text 引文怎么渲染。使用`citation-format`属性设置其为以下几种情形：
+
+- “author-date” - e.g. “… (Doe, 1999)”
+
+- “author” - e.g. “… (Doe)”
+
+- “numeric” - e.g. “… [1]”
+
+- “label” - e.g. “… [doe99]”
+
+- “note” - the citation appears as a footnote or endnote
+
+  `cs:categroy`也可能在携带`field`属性时多次使用，用来对学科进行分类（见附录I）。
+
+`cs:id`
+
+​	必须出现一次。该元素应该包含一个URI以建立样式的`ID`，对于公开可用的样式，需要一个稳定、唯一的并可以引用的 URI。
+
+`cs:issn/cs:essn/cs:issnl`（可选）
+
+​	`cs:issn`元素可以多次使用，用来表示该 CSL 对应的期刊的 ISSN 。 `cs:eissn` 和`cs:issnl` 可以分别用来表示 eISSN and [ISSN-L](http://www.issn.org/2-22637-What-is-an-ISSN-L.php) 。
+
+`cs:link` (可选)
+
+​	可以使用多次。`cs:link`必须携带两个属性`href`和`rel`。`href`用来设置 URI （通常情况下为 URL），`rel`表明 URI 与当前样式的关系，它的值可能是：
+
+- “self” - 样式的 URI
+- “template” - 用来编写该样式的模板的 URI
+- “documentation - 该样式的文档
+
+`cs:published` (可选)
+
+​	`cs:published`必须是一个[时间戳](http://books.xmlschemata.org/relaxng/ch19-77049.html)，用来表明样式创建的时间或者可获得的时间。
+
+`cs:rights` (可选)
+
+​	`cs:rights`表明了该 CSL 的 license，可能会携带`license`属性。
+
+`cs:summary` (可选)
+
+​	给出该 CSL 的简单描述。
+
+`cs:title` 
+
+​	其内容应该是该 CSL 展示给使用者的名字。
+
+`cs:title-short` (可选)
+
+​	是上述名字的缩写，比如`APA`
+
+`cs:updated` 
+
+​	内容是一个[时间戳](http://books.xmlschemata.org/relaxng/ch19-77049.html)，用来表示该 CSL 的最后更新时间。
+
+
+
+`cs:link`, `cs:rights`, `cs:summary`, `cs:title` 和 `cs:title-short`元素可以携带`xml:lang`属性用来表示元素内容的语言（值必须是[xsd:language locale code](http://books.xmlschemata.org/relaxng/ch19-77191.html)）。对于`cs:link`，该属性可以用来表示链接目标的语言。
+
+在从属格式中，当`cs:link`中的 `href`为其父格式的 URI时，`rel`属性必须设置为`"independent-parent"`。此外，从属格式的`ref`不能设置为`"template"`，这在独立格式中才能使用。
+
+
+
+下面是一个独立样式`cs:info`的例子：
+
+```xml
+<info>
+  <title>Style Title</title>
+  <id>http://www.zotero.org/styles/style-title</id>
+  <link href="http://www.zotero.org/styles/style-title" rel="self"/>
+  <author>
+    <name>Author Name</name>
+    <email>name@domain.com</email>
+    <uri>http://www.domain.com/name</uri>
+  </author>
+  <category citation-format="author-date"/>
+  <category field="zoology"/>
+  <updated>2008-10-29T21:01:24+00:00</updated>
+  <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work
+  is licensed under a Creative Commons Attribution-Share Alike 3.0 Unported
+  License</rights>
+</info>
+```
+
 #### Citation
 
-#### Biography
+`cs:citation`元素描述了引文的格式，其中引文可以是一条或者多条。引文的格式可能是in-text citations (`author (e.g. “[Doe]”)`, `author-date (“[Doe 1999]”)`, `label (“[doe99]”`) 或者 `number (“[1]”)` ) 或者 notes。这要求`cs:layout`子元素来描述什么样的数据，以及怎么被引用（见`cs:layout`）。在`cs:layout`之前可能会有`cs:sort`元素，用来描述引文的排序（见排序）。`cs:citation`元素可能携带一些属性。下面是一个`cs:citation`的例子：
+
+```xml
+<citation>
+  <sort>
+    <key variable="citation-number"/>
+  </sort>
+  <layout>
+    <text variable="citation-number"/>
+  </layout>
+</citation>
+```
+
+**A note to CSL processor developers**
+
+#### Bioliography
+
+`cs:bioliography`元素描述了参考文献条目的格式。同`cs:citation`相同，其子元素`cs:layout`用来描述每个条目的格式，`cs:sort`元素用来描述条目的排序。下面是一个`cs:bioliography`的例子：
+
+```xml
+<bibliography>
+  <sort>
+    <key macro="author"/>
+  </sort>
+  <layout>
+    <group delimiter=". ">
+      <text macro="author"/>
+      <text variable="title"/>
+    </group>
+  </layout>
+</bibliography>
+```
 
 #### Macro
+
+
 
 #### Locale
 
@@ -127,15 +253,509 @@ CSL 是一种基于 XML 的格式，用来描述引用的格式，注释和参�
 
 ## 样式行为
 
-## 附录I 分类
+## 附录I 学科分类
+
+- anthropology
+- astronomy
+- biology
+- botany
+- chemistry
+- communications
+- engineering
+- generic-base - used for generic styles like Harvard and APA
+- geography
+- geology
+- history
+- humanities
+- law
+- linguistics
+- literature
+- math
+- medicine
+- philosophy
+- physics
+- political_science
+- psychology
+- science
+- social_science
+- sociology
+- theology
+- zoology
 
 ## 附录II 术语
 
-## 附录III 类型
+### [Locators](https://docs.citationstyles.org/en/stable/specification.html#id89)
+
+- book
+- chapter
+- column
+- figure
+- folio
+- issue
+- line
+- note
+- opus
+- page
+- paragraph
+- part
+- section
+- sub verbo
+- verse
+- volume
+
+### [Months](https://docs.citationstyles.org/en/stable/specification.html#id90)
+
+- month-01
+- month-02
+- month-03
+- month-04
+- month-05
+- month-06
+- month-07
+- month-08
+- month-09
+- month-10
+- month-11
+- month-12
+
+### [Ordinals](https://docs.citationstyles.org/en/stable/specification.html#id91)
+
+- ordinal
+- ordinal-00 through ordinal-99
+- long-ordinal-01
+- long-ordinal-02
+- long-ordinal-03
+- long-ordinal-04
+- long-ordinal-05
+- long-ordinal-06
+- long-ordinal-07
+- long-ordinal-08
+- long-ordinal-09
+- long-ordinal-10
+
+### [Quotation marks](https://docs.citationstyles.org/en/stable/specification.html#id92)
+
+- open-quote
+- close-quote
+- open-inner-quote
+- close-inner-quote
+
+### [Roles](https://docs.citationstyles.org/en/stable/specification.html#id93)
+
+- author
+- collection-editor
+- composer
+- container-author
+- director
+- editor
+- editorial-director
+- editortranslator
+- illustrator
+- interviewer
+- original-author
+- recipient
+- reviewed-author
+- translator
+
+### [Seasons](https://docs.citationstyles.org/en/stable/specification.html#id94)
+
+- season-01
+- season-02
+- season-03
+- season-04
+
+### [Miscellaneous](https://docs.citationstyles.org/en/stable/specification.html#id95)
+
+- accessed
+- ad
+- and
+- and others
+- anonymous
+- at
+- available at
+- bc
+- by
+- circa
+- cited
+- edition
+- et-al
+- forthcoming
+- from
+- ibid
+- in
+- in press
+- internet
+- interview
+- letter
+- no date
+- online
+- presented at
+- reference
+- retrieved
+- scale
+- version
+
+## 附录III 文献类型
+
+- article  文章
+- article-magazine 杂志文章
+- article-newspaper 新闻文章
+- article-journal  期刊文章
+- bill
+- book 书
+- broadcast
+- chapter 章节
+- dataset  数据集
+- entry
+- entry-dictionary
+- entry-encyclopedia
+- figure 图
+- graphic
+- interview 采访
+- legislation
+- legal_case
+- manuscript
+- map  地图
+- motion_picture
+- musical_score
+- pamphlet
+- paper-conference
+- patent
+- post  
+- post-weblog
+- personal_communication
+- report  报告
+- review
+- review-book
+- song
+- speech  演讲
+- thesis  学位论文
+- treaty
+- webpage  网页
 
 ## 附录IV 变量
 
+### 标准变量
+
+- abstract
+
+  项目的摘要（例：期刊文章的摘要）
+
+- annote
+
+  读者关于项目内容的笔记
+
+- archive
+
+  保存项目的存档
+
+- archive_location
+
+  存档的位置
+
+- archive-place
+
+  存档的地理位置
+
+- authority
+
+  权力
+
+- call-number
+
+  call number (to locate the item in a library)
+
+- citation-label
+
+  label identifying the item in in-text citations of label styles (e.g. “Ferr78”). May be assigned by the CSL processor based on item metadata.
+
+- citation-number
+
+  index (starting at 1) of the cited reference in the bibliography (generated by the CSL processor)
+
+- collection-title
+
+  title of the collection holding the item (e.g. the series title for a book)
+
+- container-title
+
+  title of the container holding the item (e.g. the book title for a book chapter, the journal title for a journal article)
+
+- container-title-short
+
+  short/abbreviated form of “container-title” (also accessible through the “short” form of the “container-title” variable)
+
+- dimensions
+
+  physical (e.g. size) or temporal (e.g. running time) dimensions of the item
+
+- DOI
+
+  Digital Object Identifier (e.g. “10.1128/AEM.02591-07”)
+
+- event
+
+  name of the related event (e.g. the conference name when citing a conference paper)
+
+- event-place
+
+  geographic location of the related event (e.g. “Amsterdam, the Netherlands”)
+
+- first-reference-note-number
+
+  number of a preceding note containing the first reference to the item. Assigned by the CSL processor. The variable holds no value for non-note-based styles, or when the item hasn’t been cited in any preceding notes.
+
+- genre
+
+  class, type or genre of the item (e.g. “adventure” for an adventure movie, “PhD dissertation” for a PhD thesis)
+
+- ISBN
+
+  International Standard Book Number
+
+- ISSN
+
+  International Standard Serial Number
+
+- jurisdiction
+
+  geographic scope of relevance (e.g. “US” for a US patent)
+
+- keyword
+
+  关键字
+
+- locator
+
+  a cite-specific pinpointer within the item (e.g. a page number within a book, or a volume in a multi-volume work). Must be accompanied in the input data by a label indicating the locator type (see the [Locators](https://docs.citationstyles.org/en/stable/specification.html#locators) term list), which determines which term is rendered by `cs:label` when the “locator” variable is selected.
+
+- medium
+
+  medium description (e.g. “CD”, “DVD”, etc.)
+
+- note
+
+  (short) inline note giving additional item details (e.g. a concise summary or commentary)
+
+- original-publisher
+
+  original publisher, for items that have been republished by a different publisher
+
+- original-publisher-place
+
+  geographic location of the original publisher (e.g. “London, UK”)
+
+- original-title
+
+  最初版本的题目
+
+- page
+
+  项目的页码范围
+
+- page-first
+
+  页码范围的第一个页码
+
+- PMCID
+
+  PubMed Central reference number
+
+- PMID
+
+  PubMed reference number
+
+- publisher
+
+  出版商/出版社
+
+- publisher-place
+
+  出版社的地理位置
+
+- references
+
+  resources related to the procedural history of a legal case
+
+- reviewed-title
+
+  title of the item reviewed by the current item
+
+- scale
+
+  scale of e.g. a map
+
+- section
+
+  container section holding the item (e.g. “politics” for a newspaper article)
+
+- source
+
+  from whence the item originates (e.g. a library catalog or database)
+
+- status
+
+  (publication) status of the item (e.g. “forthcoming”)
+
+- title
+
+  primary title of the item
+
+- title-short
+
+  short/abbreviated form of “title” (also accessible through the “short” form of the “title” variable)
+
+- URL
+
+  链接
+
+- version
+
+  版本
+
+- year-suffix
+
+  disambiguating year suffix in author-date styles (e.g. “a” in “Doe, 1999a”)
+
+### 数据变量
+
+Number variables are a subset of the [Standard Variables](https://docs.citationstyles.org/en/stable/specification.html#standard-variables).
+
+- chapter-number
+
+  章序号
+
+- collection-number
+
+  number identifying the collection holding the item (e.g. the series number for a book)
+
+- edition
+
+  版本序号（注意和version的区别）
+
+- issue
+
+  (container) issue holding the item (e.g. “5” when citing a journal article from journal volume 2, issue 5)
+
+- number
+
+  number identifying the item (e.g. a report number)
+
+- number-of-pages
+
+  引用项目的总的页数
+
+- number-of-volumes
+
+  total number of volumes, usable for citing multi-volume books and such
+
+- volume
+
+  (container) volume holding the item (e.g. “2” when citing a chapter from book volume 2)
+
+### 日期变量
+
+- accessed
+
+  date the item has been accessed
+
+- container
+
+  ?
+
+- event-date
+
+  date the related event took place
+
+- issued
+
+  date the item was issued/published
+
+- original-date
+
+  (issue) date of the original version
+
+- submitted
+
+  date the item (e.g. a manuscript) has been submitted for publication
+
+### 名字变量
+
+- author
+
+  作者
+
+- collection-editor
+
+  editor of the collection holding the item (e.g. the series editor for a book)
+
+- composer
+
+  composer (e.g. of a musical score)
+
+- container-author
+
+  author of the container holding the item (e.g. the book author for a book chapter)
+
+- director
+
+  director (e.g. of a film)
+
+- editor
+
+  编辑
+
+- editorial-director
+
+  managing editor (“Directeur de la Publication” in French)
+
+- illustrator
+
+  illustrator (e.g. of a children’s book)
+
+- interviewer
+
+  interviewer (e.g. of an interview)
+
+- original-author
+
+  ?
+
+- recipient
+
+  recipient (e.g. of a letter)
+
+- reviewed-author
+
+  author of the item reviewed by the current item
+
+- translator
+
+  翻译
+
 ## 附录V 页码范围格式
 
+`cs:style`元素中的`page-range-format`表示了页码的缩写规则，其取值可能是：
 
+`"chicago"`
+
+| 第一个数字                           | 第二个数字                                     | 例                                   |
+| ------------------------------------ | ---------------------------------------------- | ------------------------------------ |
+| 小于100                              | 使用所有的位数                                 | 3–10; 71–72                          |
+| 100或者100的整数                     | 使用所有的位数                                 | 100–104; 600–613; 1100–1123          |
+| 100到109 （包括对应100的倍数的范围） | 仅使用有变化的部分，忽略不需要的0              | 107–8; 505–17; 1002–6                |
+| 110到199 （包括对应100的倍数的范围） | 根据需要使用两位数或者更多                     | 321–25; 415–532; 11564–68; 13792–803 |
+| 4位数                                | 如果数字是4位并且其中有3位不同，使用所有的位数 | 1496–1504; 2787–2816                 |
+
+`"expanded"`
+
+​	扩展模式，不适用缩写。eg. 42–45、321–328、2787–2816
+
+`"minimal"`
+
+​	第二个数字中重复的所有数字都被省略：42–5，321–8，2787–816
+
+`"minimal-two"`
+
+​	和`"minimal"`类似，但当第二个数字有两个或者两个以上的数字时，第二个数字至少保留两位。
 
