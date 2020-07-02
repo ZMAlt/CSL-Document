@@ -243,9 +243,60 @@ CSL 是一种基于 XML 的格式，用来描述引用的格式，注释和参�
 
 #### Macro
 
+宏，使用`cs:macro`元素定义，包含了格式的指令。宏可以在其他宏，`cs:layout`元素(`cs:citation`和`cs:bioliography`中)，`cs:key`元素(`cs:sort`)中通过`cs:text`调用。宏在文件中位置的通常建议是：放在`cs:locale`元素后以及`cs:citation`元素前。
 
+宏通过`cs:macro`元素的属性`name`的值来调用。`cs:macro`必须啊包含一个或者多个渲染元素。
+
+使用宏可以提高样式的可读性，紧凑性以及可维护性。建议用过宏调用来保持`cs:citation`元素和`cs:bioliography`元素的内容紧凑。为了再其他样式中方便的重复使用，宏名字建议使用通用的名字。
+
+下面是一个实例：引文中包括项目题目，并当条目为"book"时，设置字体为`italic`。
+
+```xml
+<style>
+  <macro name="title">
+    <choose>
+      <if type="book">
+        <text variable="title" font-style="italic"/>
+      </if>
+      <else>
+        <text variable="title"/>
+      </else>
+    </choose>
+  </macro>
+  <citation>
+    <layout>
+      <text macro="title"/>
+    </layout>
+  </citation>
+</style>
+```
 
 #### Locale
+
+来自`"locales-xx-XX.xml"`locale file 的本地化数据可以通过`cs:locale`元素来重定义或者补充定义。`cs:locale`元素应该放在`cs:info`元素后。
+
+`cs:locale`元素的`xml:lang`属性是可选的，必须设置为[xsd:language locale code](http://books.xmlschemata.org/relaxng/ch19-77191.html)中的一种，用来确定使用的语言环境（或方言，见 locale fallback）。
+
+See [Terms](https://docs.citationstyles.org/en/stable/specification.html#terms), [Localized Date Formats](https://docs.citationstyles.org/en/stable/specification.html#localized-date-formats) and [Localized Options](https://docs.citationstyles.org/en/stable/specification.html#localized-options) for further details on the use of `cs:locale`.
+
+下面是一个`cs:locale`元素的例子：
+
+```xml
+<style>
+  <locale xml:lang="en">
+    <terms>
+      <term name="editortranslator" form="short">
+        <single>ed. &amp; trans.</single>
+        <multiple>eds. &amp; trans.</multiple>
+      </term>
+    </terms>
+  </locale>
+</style>
+```
+
+**Locale Fallback**
+
+
 
 ## Locale Files
 
