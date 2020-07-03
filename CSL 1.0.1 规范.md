@@ -296,9 +296,48 @@ See [Terms](https://docs.citationstyles.org/en/stable/specification.html#terms),
 
 **Locale Fallback**
 
+Locale file 为语言方言提供了本地化数据；可选的`cs:locale`元素的`xml:lang`属性设置为一种语言(e.g. “en” for English) 或者方言，`xml:lang`属性也可能缺失。Localr fallback 是一种在上述的属性设置中检索来确定本地化单元的机制。这些本地化单元包括日期格式，本地化选项或者术语的特定形式。
 
+对于同一种语言的方言，一种被称为初级方言，其他都是二级方言。下面展示了部分语言的初级方言和二级方言：
+
+| 初级方言 | 二级方言     |
+| -------- | ------------ |
+| de-DE    | de-AT, de-CH |
+| en-US    | en-GB        |
+| pt-PT    | pt-BR        |
+| zh-CN    | zh-TW        |
+
+这里用一个例子来描述 Locale fallback。如果要选择 `"de-AT"`(Austrian German)，本地化单元可以来自下面的源（优先级逐渐降低）：# 这里有点问题
+
+A. `cs:locale`元素
+
+- `xml:lang`设置为方言 `"de-AT"`
+- `xml:lang`设置为 `"de"`
+- `xml:lang`不设置
+
+B. Locale files
+
+- `xml:lang`设置为方言  `"de-AT"`
+- `xml:lang`设置为对应的初级方言 `"de-DE"` (standard german)
+- `xml:lang`设置为`"en-US"`
+
+也就是说，如果要使用`"de-AT"`语言，首先在 Locale files 中寻找`"de"`对应的 files，即`"de-AT"`和`"de-DE"`，由于使用的是方言`"de-AT"`，所以选择`de-AT`对应的 locale file。接下来，如果 csl 文件中包含 `cs:locale`元素，将会覆盖 locale file 文件的设置。
 
 ## Locale Files
+
+### Info
+
+### Terms(术语)
+
+#### 序数后缀
+
+#### 特定序数
+
+### 本地化日期格式
+
+### 本地化选项
+
+
 
 ## 渲染元素
 
