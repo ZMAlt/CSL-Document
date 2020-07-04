@@ -325,7 +325,54 @@ B. Locale files
 
 ## Locale Files
 
+尽管本地化数据可以包括在 csl 文件中(见[Locale](#Locale))，但是 Locale file 可以方便的提供本地化数据的设置，包括术语，日期格式以及语法选项。
+
+每个 Locale file 包括了一种语言方言的本地化数据。locale file 中根元素为`cs:locale`。在`cs:locale`根元素中，属性`xml:lang`用来设置方言。同时这一设置选项也用来对 locale file w文件命名（`"xx-XX"`文件名为`locales-xx-XX.xml`）。此外，根元素必须携带`version`属性，表明 locale file 的 CSL 版本（对 CSL 1.0 兼容的 locale file 必须设置为`"1.0"`）。Locale file 有和样式同样的[命名空间](https://docs.citationstyles.org/en/stable/specification.html#namespacing) 。`cs:locale`元素可能包含`cs:info`作为第一个子元素，同时，必须含有`cs:terms`、`cs:date`、`cs:style-options`子元素。下面是一个 locale file 的部分示例：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<locale xml:lang="en-US" version="1.0" xmlns="http://purl.org/net/xbiblio/csl">
+  <style-options punctuation-in-quote="true"/>
+  <date form="text">
+    <date-part name="month" suffix=" "/>
+    <date-part name="day" suffix=", "/>
+    <date-part name="year"/>
+  </date>
+  <date form="numeric">
+    <date-part name="year"/>
+    <date-part name="month" form="numeric" prefix="-" range-delimiter="/"/>
+    <date-part name="day" prefix="-" range-delimiter="/"/>
+  </date>
+  <terms>
+    <term name="no date">n.d.</term>
+    <term name="et-al">et al.</term>
+    <term name="page">
+      <single>page</single>
+      <multiple>pages</multiple>
+    </term>
+    <term name="page" form="short">
+      <single>p.</single>
+      <multiple>pp.</multiple>
+    </term>
+  </terms>
+</locale>
+```
+
 ### Info
+
+`cs:info`元素用来给出 locale file 的元数据。它含有以下子元素：
+
+`cs:translator`(可选)
+
+​	`cs:translator`用来致谢翻译者，并且能使用多次。在这个元素中。子元素`cs:name`必须出现一次，`cs:uri`则是可选的。这些子元素应该分别包括翻译者的名字，地址和 URI。
+
+`cs:rights`(可选)
+
+​	可能出现一次。`cs:rights`的内容用来指定 locale file 发布版本的 license。该元素可能会携带`license`属性来指定`license`的 URI，`xml:lang`属性则用来指定元素内容的语言（值必须是[xsd:language locale code](http://books.xmlschemata.org/relaxng/ch19-77191.html)）。
+
+`cs:updates`(可选)
+
+​	`cs:updated`元素的内容必须是一个时间戳来指定 locale file 最后一次更新的时间。
 
 ### Terms(术语)
 
@@ -335,9 +382,21 @@ B. Locale files
 
 ### 本地化日期格式
 
+在`cs:date`元素中，本地化数据格式有两种格式：一种是`"numeric"`（例：`12-15-2005`），另外一种是 `"text"`（例：`December 15,2005`）。格式在`cs:date`元素中，使用`form`属性来设置。
+
+日期格式使用`cs:date-part`子元素来构建（见[Date-part](https://docs.citationstyles.org/en/stable/specification.html#date-part)）。With a required `name` attribute set to either `day`, `month` or `year`, the order of these elements reflects the display order of respectively the day, month, and year. 日期可以使用`cs:date`和`cs:date-part`元素中的[formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting) 和 [text-case](https://docs.citationstyles.org/en/stable/specification.html#text-case)属性设置。`cs:date`元素中的`delimiter`属性用来设置`cs:date-part`中不同部分的间隔and [affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes) may be applied to the `cs:date-part` elements.
+
+**Note** Affixes are not allowed on `cs:date` when defining localized date formats. This restriction is in place to separate locale-specific affixes (set on the `cs:date-part` elements) from any style-specific affixes (set on the calling `cs:date` element), such as parentheses. An example of a macro calling a localized date format:
+
+```xml
+<macro name="issued">
+ <date variable="issued" form="numeric" prefix="(" suffix=")"/>
+</macro>
+```
+
 ### 本地化选项
 
-
+本地化选项有两个，`limit-day-ordinals-to-day-1` 和 `punctuation-in-quote` （见[Locale Options](https://docs.citationstyles.org/en/stable/specification.html#locale-options)）。这些全局选项（同时影响引文和参考文献条目）在`cs:style-options`中被设置为可选属性。
 
 ## 渲染元素
 
