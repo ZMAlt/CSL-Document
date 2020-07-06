@@ -376,6 +376,18 @@ B. Locale files
 
 ### Terms(术语)
 
+术语是本地化的字符串（比如通过使用`"and"`术语，`"Doe and Smith"`在 locale 从英语到德语的转换中会自动变为`"Doe und Smith"`）。术语用`cs:term`元素定义，是`cs:terms`元素的子元素。每个`cs:term`元素必须携带一个`name`属性，设置为[附录II 术语](#附录II 术语)。
+
+术语可以直接在`cs:term`的内容中定义，或者，in cases where singular and plural variants are needed (e.g. “page” and “pages”), in the content of the child elements `cs:single` and `cs:multiple`, respectively。
+
+Terms may be defined for specific forms by using `cs:term` with the optional `form` attribute set to:
+
+- “long” - (default), e.g. “editor” and “editors” for the “editor” term
+- “short” - e.g. “ed.” and “eds.” for the term “editor”
+- “verb” - e.g. “edited by” for the term “editor”
+- “verb-short” - e.g. “ed.” for the term “editor”
+- “symbol” - e.g. “§” and “§§” for the term “section”
+
 #### 序数后缀
 
 #### 特定序数
@@ -399,6 +411,67 @@ B. Locale files
 本地化选项有两个，`limit-day-ordinals-to-day-1` 和 `punctuation-in-quote` （见[Locale Options](https://docs.citationstyles.org/en/stable/specification.html#locale-options)）。这些全局选项（同时影响引文和参考文献条目）在`cs:style-options`中被设置为可选属性。
 
 ## 渲染元素
+
+渲染元素指定了在引文或参考文献条目中需要包含哪些条目元数据，以及以何种方式排序，并对其格式进行控制。
+
+### Layout
+
+`cs:layout`渲染元素是`cs:citation`元素和`cs:bibliography`元素的的必要子元素。`cs:layout`必须包含一个或者多个渲染元素，并且可能携带`affixes`和格式化属性。在`cs:citation`元素中，`delimiter`属性用来指定一个引文中的不同引用的间隔符。例如：一个`"(1,2)"`类型的引文可以使用下面的代码实现：
+
+```xml
+<citation>
+  <layout prefix="(" suffix=")" delimiter=", ">
+    <text variable="citation-number"/>
+  </layout>
+</citation>
+```
+
+### Text
+
+`cs:text`渲染元素用来输出文字。其必须携带下面的属性来确定什么部分需要渲染：
+
+- `variable`- 
+- `macro` - 渲染宏的文字输出。属性值必须和`cs:macro`元素的`name`属性的值相匹配。
+- `term` - 
+- `value` - 
+
+一个`cs:text`的渲染`"title"`变量的例子：
+
+```xml
+<text variable="title"/>
+```
+
+`cs:text` may also carry [affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes), [display](https://docs.citationstyles.org/en/stable/specification.html#display), [formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting), [quotes](https://docs.citationstyles.org/en/stable/specification.html#quotes), [strip-periods](https://docs.citationstyles.org/en/stable/specification.html#strip-periods) and [text-case](https://docs.citationstyles.org/en/stable/specification.html#text-case) attributes.
+
+### Date
+
+#### Date-part
+
+#### AD and BC
+
+#### Seasons
+
+#### Approximate Dates
+
+### Number
+
+### Names
+
+#### Name
+
+#### Et-al
+
+#### Substitute
+
+#### Label in `cs:names`
+
+### Label
+
+### Group
+
+### Choose
+
+
 
 ## 样式行为
 
