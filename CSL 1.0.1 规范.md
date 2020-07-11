@@ -430,10 +430,10 @@ Terms may be defined for specific forms by using `cs:term` with the optional `fo
 
 `cs:text`渲染元素用来输出文字。其必须携带下面的属性来确定什么部分需要渲染：
 
-- `variable`- 
+- `variable`- 渲染一个变量的文本内容。属性值必须是[标准变量](#标准变量)。可以与`form`属性一起选择变量的“long”（默认）或“short”形式（e.g. the full or short title）。如果选择了`"short"`形式，但是却没法获得，就使用`"long"`形式来渲染。
 - `macro` - 渲染宏的文字输出。属性值必须和`cs:macro`元素的`name`属性的值相匹配。
-- `term` - 
-- `value` - 
+- `term` - 渲染术语。属性必须是[Appendix II-Terms](Appendix II-Terms)中的术语列表中的一个。May be accompanied by the `plural` attribute to select the singular (“false”, default) or plural (“true”) variant of a term, and by the `form` attribute to select the “long” (default), “short”, “verb”, “verb-short” or “symbol” form variant (see also [Terms](https://docs.citationstyles.org/en/stable/specification.html#terms)).
+- `value` - 渲染属性值自己。
 
 一个`cs:text`的渲染`"title"`变量的例子：
 
@@ -441,17 +441,73 @@ Terms may be defined for specific forms by using `cs:term` with the optional `fo
 <text variable="title"/>
 ```
 
-`cs:text` may also carry [affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes), [display](https://docs.citationstyles.org/en/stable/specification.html#display), [formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting), [quotes](https://docs.citationstyles.org/en/stable/specification.html#quotes), [strip-periods](https://docs.citationstyles.org/en/stable/specification.html#strip-periods) and [text-case](https://docs.citationstyles.org/en/stable/specification.html#text-case) attributes.
+`cs:text` 可能会携带 [affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes), [display](https://docs.citationstyles.org/en/stable/specification.html#display), [formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting), [quotes](https://docs.citationstyles.org/en/stable/specification.html#quotes), [strip-periods](https://docs.citationstyles.org/en/stable/specification.html#strip-periods) 和 [text-case](https://docs.citationstyles.org/en/stable/specification.html#text-case) 属性。
 
 ### Date
 
+`cs:date`渲染元素输出从[日期变量](#日期变量)列表中的选择的日期。日期可以以本地化或者非本地化格式呈现。
+
 #### Date-part
+
+#### Date Ranges
+
+默认的日期范围中的分隔符是短线(en-dash)，比如：“May–July 2008”。可以在`cs:date-part`元素中通过`range-delimiter`属性来设置常用的分隔符。当日期范围被渲染的时候，范围分隔符从`cs:date-part`元素中提取，并且匹配两个日期差别中最大的部分(“year”, “month”, 或 “day”)。如下面的例子，将会渲染出类似`“1-4 May 2008”, “May–July 2008” and “May 2008/June 2009”`的日期范围。
+
+```xml
+<style>
+  <citation>
+    <layout>
+      <date variable="issued">
+        <date-part name="day" suffix=" " range-delimiter="-"/>
+        <date-part name="month" suffix=" "/>
+        <date-part name="year" range-delimiter="/"/>
+      </date>
+    </layout>
+  </citation>
+</style>
+```
 
 #### AD and BC
 
+`“ad”`一词（Anno Domini）自动附加到小于四位数的正年份（例如，`“79”`变为`“79AD”`）。`“bc”`一词（Before Christ）自动附加到负年份（例如，`“-2500”`变为`“2500BC”`）。
+
 #### Seasons
 
+如果日期中包含了季节而不是月份，日期术语(`“season-01” `到` “season-04”`, 分别代表春夏秋冬)将取代月份术语。比如，下面将会被渲染为`“May 2008”` 和` “Winter 2009”`
+
+```xml
+<style>
+  <citation>
+    <layout>
+      <date variable="issued">
+        <date-part name="month" suffix=" "/>
+        <date-part name="year"/>
+      </date>
+    </layout>
+  </citation>
+</style>
+```
+
 #### Approximate Dates
+
+Approximate dates test “true” for the `is-uncertain-date` conditional (see [Choose](https://docs.citationstyles.org/en/stable/specification.html#choose)). For example,would result in “2005” (normal date) and “ca. 2003” (approximate date).
+
+```xml
+<style>
+  <citation>
+    <layout>
+      <choose>
+        <if is-uncertain-date="issued">
+          <text term="circa" form="short" suffix=" "/>
+        </if>
+      </choose>
+      <date variable="issued">
+        <date-part name="year"/>
+      </date>
+    </layout>
+  </citation>
+</style>
+```
 
 ### Number
 
