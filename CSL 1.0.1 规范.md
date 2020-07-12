@@ -447,7 +447,51 @@ Terms may be defined for specific forms by using `cs:term` with the optional `fo
 
 `cs:date`渲染元素输出从[日期变量](#日期变量)列表中的选择的日期。日期可以以本地化或者非本地化格式呈现。
 
+本地化的日期格式通过可选的`form`属性来选择，其值必须设置为`"numeric"`(for fully numeric formats, e.g. “12-15-2005”)或者`"text"`(for formats with a non-numeric month, e.g. “December 15, 2005”)。本地化日期格式可以通过两种方式进行自定义。第一种：`date-parts`属性可以用来设置较少的日期部分。可能得值为：
+
+- “year-month-day” - 默认值，渲染年，月，日
+- “year-month” - 渲染年月
+- “year” - 只渲染年
+
+第二种，`cs:date`可以含有一个或者多个`cs:date-part`子元素。在这些子元素种可以设置属性来覆盖之前的设置(e.g. to get abbreviated months for all locales, the `form` attribute on the month-`cs:date-part` element can be set to “short”)。这些子元素不影响各个日期部分渲染的顺序和以及其是否渲染。 [Affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes), which are very locale-specific, are not allowed on these `cs:date-part` elements.
+
+没有属性`form`的情况下,`cs:date`则描述了一个自带的非本地化的日期格式。其日期格式使用`cs:date-part`子元素来构建。在使用`name`属性并设置为`day`,`month`或`year`时，这些元素的顺序反应了其显示顺序。日期可以在`cs:date-part`元素种使用`formatting`属性以及多个`cs:date-part`的属性来格式化。`cs:date`种的`delimiter`属性可以用来设置`cs:date-part`元素不同日期部分的分隔符，and [affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes) may be applied to the `cs:date-part` elements。
+
+本地化的日期或者是非本地化的日期，, `cs:date` 都可能携带 [affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes), [display](https://docs.citationstyles.org/en/stable/specification.html#display), [formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting) 和[text-case](https://docs.citationstyles.org/en/stable/specification.html#text-case) 属性。
+
 #### Date-part
+
+`cs:date-part`元素用来控制日期的各个部分怎么渲染。除了其父元素`cs:date`调用了本地化日期格式，这些子元素同样可以决定哪些部分出现以及各部分的渲染顺序。`cs:date-part`元素描述了`name`属性选择的日期部分，其`name`值可以是：
+
+**“day”**
+
+​	对于`"day"`来说，`cs:date-part`可能会携带`form`属性，值可以设置为：
+
+- “numeric” - (default), e.g. “1”
+
+- “numeric-leading-zeros” - e.g. “01”
+
+- “ordinal” - e.g. “1st”
+
+  有的语言种，比如法语，只在月份的第一天使用`"oridinal"`也就是序数形式(“1er janvier”, “2 janvier”, “3 janvier”, etc.)。这种输出可以通过`"oridinal"`以及`limit-day-oridinals-to-day`属性来设置 (see [Locale Options](https://docs.citationstyles.org/en/stable/specification.html#locale-options))。
+
+**“month”**
+
+​	对于`"month"`来说，`cs:date-part`可能会携带`strip-periods`和`form`属性。在locale files中，月份缩写应该后面要加点（e.g. “Jan.”, “Feb.”）。点可以设置`strip-periods`为`"true"`去掉。`form`属性可以设置为：
+
+- “long” - (default), e.g. “January”
+- “short” - e.g. “Jan.”
+- “numeric” - e.g. “1”
+- “numeric-leading-zeros” - e.g. “01”
+
+**“year”**
+
+​	对`"year"`来说，`cs:date-part`可能会携带`form`属性，值可以设置为：
+
+- “long” - (default), e.g. “2005”
+- “short” - e.g. “05”
+
+`cs:date-part` 也可能携带[formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting), [text-case](https://docs.citationstyles.org/en/stable/specification.html#text-case) 和 `range-delimiter` 属性。 Attributes for [affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes) are allowed, unless `cs:date` calls a localized date format.
 
 #### Date Ranges
 
