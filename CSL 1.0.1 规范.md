@@ -555,7 +555,34 @@ Approximate dates test “true” for the `is-uncertain-date` conditional (see [
 
 ### Number
 
+`cs:number`渲染元素输出`variable`属性选择的数字变量。数字变量是标准变量的子集（见附录 变量）。
+
+使用`cs:number`元素来渲染数字变量时，如果只包含数字内容(as determined by the rules for `is-numeric`, see [Choose](https://docs.citationstyles.org/en/stable/specification.html#choose))，数字就被提取出来。变量内容包含非数字内容时，变量内容将呈现为原样。
+
+在提取的过程中，用连字符分隔的数字将去掉中见的空格（“2 - 4” 变为 “2-4”）。用逗号分隔的数字在都好后会添加一个空格，并删掉其余的空格(“2,3” 和 “2 , 3” 变为 “2, 3”)。当数字使用`&`分隔时，在前后各添加一个空格(“2&3” 变为 “2 & 3”)。
+
+提取的数字可以通过`form`属性行进格式化，其值可以设置为：
+
+- “numeric” - 默认, e.g. “1”, “2”, “3”
+- “ordinal” -  序数数字 e.g. “1st”, “2nd”, “3rd”。序数后缀可以使用术语定义 (see [Ordinal Suffixes](https://docs.citationstyles.org/en/stable/specification.html#ordinal-suffixes)).
+- “long-ordinal” - 长序数 e.g. “first”, “second”, “third”。Long ordinals are defined with the [terms](https://docs.citationstyles.org/en/stable/specification.html#terms) “long-ordinal-01” to “long-ordinal-10”, which are used for the numbers 1 through 10. For other numbers “long-ordinal” falls back to “ordinal”.
+- “roman” - 罗马数字 e.g. “i”, “ii”, “iii”
+
+带有前缀或者后缀的数字不能使用罗马数字进行排序或者渲染(e.g. “2E” 仍然时 “2E”)。没有词缀的数字可以被分别转换(“2, 3” 可以转换为 “2nd, 3rd”, “second, third” 或者 “ii, iii”)。
+
+`cs:number`元素可能会携带[affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes), [display](https://docs.citationstyles.org/en/stable/specification.html#display), [formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting) 和 [text-case](https://docs.citationstyles.org/en/stable/specification.html#text-case) 属性。
+
 ### Names
+
+`cs:names`y元素用来输出一个或多个名字变量的内容（通过必选属性`variable`来选择），。
+
+```xml
+<names variable="editor translator" delimiter="; ">
+  <label prefix=" (" suffix=")"/>
+</names>
+```
+
+`cs:names`有四个子元素:`cs:name`,`cs:et-al`,`cs:substitute`,`cs:label`。 `cs:names` element 元素可能会携带 [affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes), [display](https://docs.citationstyles.org/en/stable/specification.html#display) 和 [formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting) 属性。如果选择了多个变量，每个变量将按照顺序独立的渲染，只有当选择的出现"editor"和"translator"时，并且两个是相同时，只渲染一个内容。此外，如果`cs:names`元素包含`cs:label`元素，则使用“editortranslator”术语，替换默认的“editor”和“translator”术语。`cs:names`元素中的`delimiter`属性可以用来设置不同名字变量的名字。
 
 #### Name
 
