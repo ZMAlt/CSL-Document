@@ -586,6 +586,35 @@ Approximate dates test “true” for the `is-uncertain-date` conditional (see [
 
 #### Name
 
+`cs:name`元素的一个可选的子元素`cs:names`可以用来描述单个`names`的格式，以及名称变量中不同`names`的分隔。`cs:name`可能携带下面的属性：
+
+`and`
+
+​	在名称变量中用来设置倒数第二个名字和倒数第一个名字的分隔符。可选的值为`"text"`(“Doe, Johnson and Smith”)或者`"symbol"`(eg: “Doe, Johnson & Smith”)。
+
+`delimiter`
+
+​	在名称变量中设置字符串来分隔名称。默认的是`","`(e.g. “Doe, Smith”)。
+
+`delimiter-precedes-et-al`
+
+​	确定何时使用分隔符分隔名称变量中的倒数第一个作者和最后一个作者。（如果`and`没有被设置，则使用`delimiter`，不管`delimiter-precedes-et-al`的值）。该属性可选的值有：
+
+- “contextual” - 默认，在作者列表中有3个或者3个以上的人时使用。
+  - 2 个名字: “J. Doe and T. Williams”
+  - 3 个名字: “J. Doe, S. Smith, and T. Williams”
+- “after-inverted-name” -仅前面的名称因`name-as-sort-order` 属性颠倒时，才使用分隔符。E.g. `name-as-sort-order`设置为`"first"`
+  - “Doe, J., and T. Williams”
+  - “Doe, J., S. Smith and T. Williams”
+- “always” - 分隔符一直使用。
+  - 2 names: “J. Doe, and T. Williams”
+  - 3 names: “J. Doe, S. Smith, and T. Williams”
+- “never” - 禁用分隔符
+  - 2 names: “J. Doe and T. Williams”
+  - 3 names: “J. Doe, S. Smith and T. Williams”
+
+
+
 #### Et-al
 
 #### Substitute
