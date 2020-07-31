@@ -617,7 +617,17 @@ Approximate dates test “true” for the `is-uncertain-date` conditional (see [
 
 #### Et-al
 
+Et-al缩写通过`et-al-...`属性来控制，同时也可以使用可选的`cs:et-al`元素设置，`cs:et-al`元素必须放在`cs:name`元素后。`term`属性可以被设置为`"et-al"`（默认）或者`"and others"`。下面是 `"et-al"`术语的一个例子：
+
+```xml
+<names variable="author">
+  <et-al term="and others" font-style="italic"/>
+</names>
+```
+
 #### Substitute
+
+可选的`cs:substitute`元素，是`cs:names`的子元素，且必须是最后一个子元素，在父元素`cs:names`中指定的名称变量为空时添加替换
 
 #### Label in `cs:names`
 
