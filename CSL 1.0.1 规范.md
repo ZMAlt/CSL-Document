@@ -627,13 +627,77 @@ Et-al缩写通过`et-al-...`属性来控制，同时也可以使用可选的`cs:
 
 #### Substitute
 
-可选的`cs:substitute`元素，是`cs:names`的子元素，且必须是最后一个子元素，在父元素`cs:names`中指定的名称变量为空时添加替换
+可选的`cs:substitute`元素，是`cs:names`的子元素，且必须是最后一个子元素，在父元素`cs:names`中指定的名称变量为空时添加替换。替换必须放在`cs:substitute`元素种，并且必须包含一个或者多个渲染元素（除`cs:layout`）。`cs:names`的简洁版本没有子元素，继承了`cs:names`元素中在`cs:name`和`cs:et-al`子元素的属性值。如果`cs:substitute`元素包含了多个子元素，第一个非空的元素用于替换。替换变量在输出的其余部分被抑制，以防止重复。下面的例子中：`"author"`名称变量为空时，就被`"editor"`名称变量替换，在没有 editor 时，则使用`"title"`宏替换。
+
+```xml
+<macro name="author">
+  <names variable="author">
+    <substitute>
+      <names variable="editor"/>
+      <text macro="title"/>
+    </substitute>
+  </names>
+</macro>
+```
+
+
 
 #### Label in `cs:names`
 
+`cs:label`元素时可选的，而且必须位于`cs:name`和`cs:et-al`元素后，在`cs:substitute`元素前。当`cs:label`作为`cs:names`元素的子元素时，`cs:label`不能携带`variable`属性，而是使用父元素`cs:names`中的变量。A second difference is that the `form` attribute may also be set to “verb” or “verb-short”, so that the allowed values are:
+
+- “long” - (default), e.g. “editor” and “editors” for the “editor” term
+- “short” - e.g. “ed.” and “eds.” for the term “editor”
+- “verb” - e.g. “edited by” for the term “editor”
+- “verb-short” - e.g. “ed.” for the term “editor”
+- “symbol” - e.g. “§” and “§§” for the term “section”
+
 ### Label
 
+`cs:label`渲染元素输出与所选变量匹配的术语，该属性必须设置为“locator”、“page”或数字变量之一。只有当选择的变量是非空的受，术语才会渲染。例如：
+
+```xml
+<group delimiter=" ">
+  <label variable="page"/>
+  <text variable="page"/>
+</group>
+```
+
+可以生成`"page 3"`或者`"pages 5-7"`。`cs:label`可能会携带下面的属性:
+
+`form`
+
+​	选择术语的形式，可以使用下面的值：
+
+- “long” - (default), e.g. “page”/”pages” for the “page” term
+- “short” - e.g. “p.”/”pp.” for the “page” term
+- “symbol” - e.g. “§”/”§§” for the “section” term
+
+`plural`
+
+​	设置术语的复数形式，可以使用下面的值：
+
+- “contextual” - (default), the term plurality matches that of the variable content. Content is considered plural when it contains multiple numbers (e.g. “page 1”, “pages 1-3”, “volume 2”, “volumes 2 & 4”), or, in the case of the “number-of-pages” and “number-of-volumes” variables, when the number is higher than 1 (“1 volume” and “3 volumes”).
+- “always” - always use the plural form, e.g. “pages 1” and “pages 1-3”
+- “never” - always use the singular form, e.g. “page 1” and “page 1-3”
+
+`cs:label`也可能会携带[affixes](https://docs.citationstyles.org/en/stable/specification.html#affixes), [formatting](https://docs.citationstyles.org/en/stable/specification.html#formatting), [text-case](https://docs.citationstyles.org/en/stable/specification.html#text-case) 和 [strip-periods](https://docs.citationstyles.org/en/stable/specification.html#strip-periods) 属性。
+
 ### Group
+
+`cs:group`元素必须包含一个或者多个渲染元素（除了 `cs:layout`）。`cs:group`可以携带`delimiter`属性来分隔子元素以及`affixes`、`display`和`formatting`属性。`cs:group`隐含的条件，当以下情况出现时，`cs:group`和它的子元素将会被抑制：a)在`cs:group`中至少一个渲染元素调用了变量（直接地或者通过宏调用），b)所有被调用得变量都为空。
+
+```xml
+<layout>
+  <group delimiter=" ">
+    <text term="retrieved"/>
+    <text term="from"/>
+    <text variable="URL"/>
+  </group>
+</layout>
+```
+
+上述代码可以生成`“retrieved from http://dx.doi.org/10.1128/AEM.02591-07”`类似得结果，但是当URL为空的时候，不生成结果。
 
 ### Choose
 
